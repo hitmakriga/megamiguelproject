@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIA "Uzņēmuma Nosaukums" - Rēķinu ģenerators</title>
-    <!-- Ikonām (FontAwesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- Jūsu norādītais CSS dizains --- */
         * {
             margin: 0;
             padding: 0;
@@ -153,6 +151,7 @@
             font-size: 1.2rem;
         }
 
+        /* --- FORM GROUP REDZAMS --- */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -161,7 +160,7 @@
         }
 
         .form-group {
-            display: flex;
+            display: flex !important;
             flex-direction: column;
         }
 
@@ -181,6 +180,7 @@
             font-size: 0.95rem;
             transition: border-color 0.2s;
             background-color: #fff;
+            width: 100%;
         }
 
         .form-group input:focus {
@@ -307,7 +307,7 @@
 
         /* Izdrukas stils */
         @media print {
-            header, .sidebar, .btn-add, .remove-btn, .btn-primary, .form-group, .items-table th:last-child, .items-table td:last-child {
+            header, .sidebar, .btn-add, .remove-btn, .btn-primary {
                 display: none !important;
             }
             .content {
@@ -331,21 +331,30 @@
                 border: none;
                 background: transparent;
             }
+            /* Drukāšanas laikā saglabājam form-group redzamus, bet bez ievades laukiem */
+            .form-group input {
+                border: none;
+                background: transparent;
+                padding: 0;
+                font-size: 0.95rem;
+                color: #000;
+            }
+            .form-group label {
+                font-size: 0.7rem;
+                color: #666;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Galvene -->
     <header>
         <h1>SIA "Uzņēmuma Nosaukums"</h1>
         <div class="header-time" id="clock">17.09.2026 00:56:05</div>
     </header>
 
-    <!-- Galvenā izkārtojuma konteiners -->
     <div class="main-container">
         
-        <!-- Sānjosla ar href saitēm -->
         <nav class="sidebar">
             <a href="#galvenais" class="sidebar-item active">
                 <i class="fas fa-home"></i>
@@ -369,7 +378,6 @@
             </a>
         </nav>
 
-        <!-- Satura apgabals -->
         <main class="content">
             
             <div class="content-header">
@@ -378,7 +386,6 @@
             </div>
             <p class="content-subtitle">Aizpildiet laukus zemāk, lai izveidotu un izdrukātu rēķinu.</p>
 
-            <!-- Rēķinu ģeneratora sekcija -->
             <div class="invoice-section">
                 
                 <h3>Rēķina informācija</h3>
@@ -414,7 +421,6 @@
                         </tr>
                     </thead>
                     <tbody id="items-body">
-                        <!-- Rindas tiks ģenerētas ar JS -->
                     </tbody>
                 </table>
 
@@ -445,9 +451,7 @@
         </main>
     </div>
 
-    <!-- JavaScript funkcionalitāte -->
     <script>
-        // Pulksteņa atjaunināšana
         function updateClock() {
             const now = new Date();
             const day = String(now.getDate()).padStart(2, '0');
@@ -461,7 +465,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Rēķina rindu loģika
         let rowCount = 0;
 
         function addRow(description = '', qty = 1, price = 0) {
@@ -499,7 +502,7 @@
                 subtotal += sum;
             });
 
-            const vatRate = 0.21; // 21% PVN
+            const vatRate = 0.21;
             const vat = subtotal * vatRate;
             const grandTotal = subtotal + vat;
 
@@ -508,7 +511,6 @@
             document.getElementById('grand-total').textContent = grandTotal.toFixed(2) + ' EUR';
         }
 
-        // Inicializēt ar vienu rindu
         addRow('Pakalpojums', 1, 100);
     </script>
 
