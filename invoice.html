@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIA "Uzņēmuma Nosaukums" - Rēķinu ģenerators</title>
+    <!-- Ikonām (FontAwesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- Jūsu norādītais CSS dizains --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f4f6f9;
+            overflow: hidden;
+        }
+
+        /* Galvene */
+        header {
+            background-color: #1a5b9c;
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-time {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Galvenā izkārtojuma konteiners */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sānjosla */
+        .sidebar {
+            width: 90px;
+            background-color: #0f3b66;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #a8c4e0;
+            text-decoration: none;
+            width: 100%;
+            padding: 12px 0;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item i {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-item:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-item.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #4a9eff;
+        }
+
+        /* Satura apgabals */
+        .content {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
+            background-color: #ffffff;
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .content-header i {
+            font-size: 1.8rem;
+            color: #1a5b9c;
+        }
+
+        .content-header h2 {
+            font-size: 1.6rem;
+            color: #1a5b9c;
+            font-weight: 700;
+        }
+
+        .content-subtitle {
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            padding-left: 48px;
+        }
+
+        /* --- Rēķinu ģeneratora stils --- */
+        .invoice-section {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .invoice-section h3 {
+            color: #1a5b9c;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input {
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1a5b9c;
+            box-shadow: 0 0 0 2px rgba(26, 91, 156, 0.1);
+        }
+
+        /* Rindu tabula */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .items-table th {
+            background-color: #f0f4f8;
+            color: #1a5b9c;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 2px solid #d0dce8;
+        }
+
+        .items-table td {
+            padding: 8px 5px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .items-table input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .items-table input:focus {
+            outline: none;
+            border-color: #1a5b9c;
+        }
+
+        .items-table .remove-btn {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .items-table .remove-btn:hover {
+            background: #cc0000;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-add {
+            background-color: #e8f0fe;
+            color: #1a5b9c;
+            border: 1px dashed #1a5b9c;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .btn-add:hover {
+            background-color: #d4e4fc;
+        }
+
+        .btn-primary {
+            background-color: #1a5b9c;
+            color: white;
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            background-color: #134a80;
+        }
+
+        .totals-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .totals-box {
+            width: 300px;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        .totals-row.grand-total {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a5b9c;
+            border-top: 2px solid #1a5b9c;
+            padding-top: 10px;
+            margin-top: 5px;
+        }
+
+        /* Izdrukas stils */
+        @media print {
+            header, .sidebar, .btn-add, .remove-btn, .btn-primary, .form-group, .items-table th:last-child, .items-table td:last-child {
+                display: none !important;
+            }
+            .content {
+                padding: 0;
+            }
+            .invoice-section {
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+            body {
+                background: white;
+                overflow: visible;
+                height: auto;
+            }
+            .main-container {
+                display: block;
+                overflow: visible;
+            }
+            .items-table input {
+                border: none;
+                background: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Galvene -->
+    <header>
+        <h1>SIA "Uzņēmuma Nosaukums"</h1>
+        <div class="header-time" id="clock">17.09.2026 00:56:05</div>
+    </header>
+
+    <!-- Galvenā izkārtojuma konteiners -->
+    <div class="main-container">
+        
+        <!-- Sānjosla -->
+        <nav class="sidebar">
+            <a href="#" class="sidebar-item active">
+                <i class="fas fa-home"></i>
+                Galvenais
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-wrench"></i>
+                Instrumenti
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-database"></i>
+                Dati
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-cog"></i>
+                Sagataves
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="fas fa-cog"></i>
+                Iestatījumi
+            </a>
+        </nav>
+
+        <!-- Satura apgabals -->
+        <main class="content">
+            
+            <div class="content-header">
+                <i class="fas fa-file-invoice"></i>
+                <h2>Rēķinu ģenerators</h2>
+            </div>
+            <p class="content-subtitle">Aizpildiet laukus zemāk, lai izveidotu un izdrukātu rēķinu.</p>
+
+            <!-- Rēķinu ģeneratora sekcija -->
+            <div class="invoice-section">
+                
+                <h3>Rēķina informācija</h3>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="invoice-number">Rēķina numurs</label>
+                        <input type="text" id="invoice-number" value="INV-2026-001" placeholder="INV-2026-001">
+                    </div>
+                    <div class="form-group">
+                        <label for="invoice-date">Datums</label>
+                        <input type="date" id="invoice-date" value="2026-09-17">
+                    </div>
+                    <div class="form-group">
+                        <label for="client-name">Klienta nosaukums</label>
+                        <input type="text" id="client-name" value="SIA "Klients"" placeholder="Klienta nosaukums">
+                    </div>
+                    <div class="form-group">
+                        <label for="client-reg">Reģ. Nr.</label>
+                        <input type="text" id="client-reg" value="40001234567" placeholder="40001234567">
+                    </div>
+                </div>
+
+                <h3>Rēķina rindas</h3>
+                <table class="items-table" id="items-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 45%;">Apraksts</th>
+                            <th style="width: 15%;">Daudzums</th>
+                            <th style="width: 20%;">Cena (EUR)</th>
+                            <th style="width: 20%;">Summa (EUR)</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-body">
+                        <!-- Rindas tiks ģenerētas ar JS -->
+                    </tbody>
+                </table>
+
+                <button class="btn btn-add" onclick="addRow()">+ Pievienot rindu</button>
+
+                <div class="totals-section">
+                    <div class="totals-box">
+                        <div class="totals-row">
+                            <span>Starpsumma:</span>
+                            <span id="subtotal">0.00 EUR</span>
+                        </div>
+                        <div class="totals-row">
+                            <span>PVN (21%):</span>
+                            <span id="vat">0.00 EUR</span>
+                        </div>
+                        <div class="totals-row grand-total">
+                            <span>Kopā:</span>
+                            <span id="grand-total">0.00 EUR</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="window.print()">
+                    <i class="fas fa-print"></i> Izdrukāt / Saglabāt PDF
+                </button>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript funkcionalitāte -->
+    <script>
+        // Pulksteņa atjaunināšana
+        function updateClock() {
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Rēķina rindu loģika
+        let rowCount = 0;
+
+        function addRow(description = '', qty = 1, price = 0) {
+            rowCount++;
+            const tbody = document.getElementById('items-body');
+            const tr = document.createElement('tr');
+            tr.id = `row-${rowCount}`;
+
+            tr.innerHTML = `
+                <td><input type="text" class="item-desc" value="${description}" placeholder="Pakalpojuma apraksts"></td>
+                <td><input type="number" class="item-qty" value="${qty}" min="1" step="1" onchange="calculateTotals()"></td>
+                <td><input type="number" class="item-price" value="${price}" min="0" step="0.01" onchange="calculateTotals()"></td>
+                <td class="item-sum" style="font-weight:600; padding-left:8px;">0.00</td>
+                <td><button class="remove-btn" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+            calculateTotals();
+        }
+
+        function removeRow(btn) {
+            const tr = btn.closest('tr');
+            tr.remove();
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            let subtotal = 0;
+            const rows = document.querySelectorAll('#items-body tr');
+            
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const sum = qty * price;
+                row.querySelector('.item-sum').textContent = sum.toFixed(2);
+                subtotal += sum;
+            });
+
+            const vatRate = 0.21; // 21% PVN
+            const vat = subtotal * vatRate;
+            const grandTotal = subtotal + vat;
+
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' EUR';
+            document.getElementById('vat').textContent = vat.toFixed(2) + ' EUR';
+            document.getElementById('grand-total').textContent = grandTotal.toFixed(2) + ' EUR';
+        }
+
+        // Inicializēt ar vienu rindu
+        addRow('Pakalpojums', 1, 100);
+    </script>
+
+</body>
+</html>
